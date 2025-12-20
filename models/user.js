@@ -1,14 +1,54 @@
 const mongoose = require('mongoose');
 
+const supplierSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  contact: {
+    type: Number,
+  },
+  address: { 
+    type: String,
+  },
+});
+
+const productSchema = new mongoose.Schema({
+  name:{
+    type: String,
+    required: true,
+  },
+  price:{
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  stock:{
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  description:{
+    type: String,
+  },
+  supplier:[supplierSchema],
+});
+
 const userSchema = mongoose.Schema({
   username: {
     type: String,
-    require: true,
+    required: true,
   },
   hashedPassword: {
     type: String,
-    require: true,
+    required: true,
   },
+  role:{
+    type: String,
+    required: true,
+    enum:['admin', 'manager'],
+  },
+  products: [productSchema],
 });
 
 userSchema.set('toJSON', {
