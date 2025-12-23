@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum:['admin', 'manager'],
+    default: 'manager',
   },
   products: [productSchema],
 });
