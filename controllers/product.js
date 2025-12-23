@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 
+const isSignedIn = require('../middleware/is-signed-in');
+const adminPerm = require('../middleware/is-admin');
+
 //index of products
-router.get('/', async (req, res) => {
+router.get('/', isSignedIn, async (req, res) => {
   try {
     // Flatten all products from all users
     const users = await User.find();
@@ -37,7 +40,7 @@ router.post('/:userId/new', isSignedIn, adminPerm, async (req, res) => {
 });
 
 //show single product
-router.get('/:userId/:productId', async (req, res) => {
+router.get('/:userId/:productId', isSignedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
