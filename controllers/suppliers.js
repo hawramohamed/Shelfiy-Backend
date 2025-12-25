@@ -21,7 +21,7 @@ router.get('/', isSignedIn, async (req, res) => {
 
 
 //add supplier to product
-router.post('/:userId/:productId/new', isSignedIn, adminPerm, async (req, res) => {
+router.post('/:userId/products/:productId/suppliers', isSignedIn, adminPerm, async (req, res) => {
   try {
     const { name, contact, address } = req.body;
     const user = await User.findById(req.params.userId);
@@ -49,7 +49,7 @@ router.post('/:userId/:productId/new', isSignedIn, adminPerm, async (req, res) =
 
 
 //show single supplier
-router.get('/:userId/:productId/:supplierId', isSignedIn, async (req, res) => {
+router.get('/:userId/products/:productId/:supplierId', isSignedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
@@ -83,7 +83,7 @@ router.get('/:userId/:productId/:supplierId', isSignedIn, async (req, res) => {
 
 
 //edit
-router.get('/:userId/:productId/:supplierId/edit', isSignedIn, adminPerm, async (req, res) => {
+router.get('/:userId/products/:productId/:supplierId/edit', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
@@ -112,7 +112,7 @@ router.get('/:userId/:productId/:supplierId/edit', isSignedIn, adminPerm, async 
 
 
 //update 
-router.put('/:userId/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
+router.put('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
@@ -149,7 +149,7 @@ router.put('/:userId/:productId/:supplierId', isSignedIn, adminPerm, async (req,
 
 
 //delete 
-router.delete('/:userId/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
+router.delete('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
@@ -172,7 +172,7 @@ router.delete('/:userId/:productId/:supplierId', isSignedIn, adminPerm, async (r
     supplier.remove();
     await user.save();
 
-    res.status(204).end();
+    res.status(200).json({ message: 'Supplier deleted successfully' });
   } catch (err) {
     console.log(err);
     res.status(500).json({ err: 'Something went wrong' });
