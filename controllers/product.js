@@ -8,7 +8,6 @@ const adminPerm = require('../middleware/is-admin');
 //index of products
 router.get('/', isSignedIn, async (req, res) => {
   try {
-    // Flatten all products from all users
     const users = await User.find();
     const allProducts = users.flatMap(user => user.products);
     res.status(200).json(allProducts);
