@@ -6,7 +6,7 @@ const supplierSchema = new mongoose.Schema({
     required: true,
   },
   contact: {
-    type: Number,
+    type: String,
   },
   address: { 
     type: String,
@@ -45,9 +45,8 @@ const userSchema = new mongoose.Schema({
   },
   role:{
     type: String,
-    required: true,
-    enum:['admin', 'manager'],
-    default: 'manager',
+    enum:['admin', 'guest'],
+    default: 'guest',
   },
   products: [productSchema],
 });

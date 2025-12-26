@@ -12,7 +12,7 @@ router.get('/', isSignedIn, async (req, res) => {
     const allProducts = users.flatMap(user =>
       user.products.map(product => ({
         ...product.toObject(),
-        suppliers: product.suppliers // ✅ include suppliers
+        suppliers: product.suppliers
       }))
     );
     res.status(200).json(allProducts);
