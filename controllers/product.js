@@ -9,13 +9,19 @@ const adminPerm = require('../middleware/is-admin');
 router.get('/', isSignedIn, async (req, res) => {
   try {
     const users = await User.find();
-    const allProducts = users.flatMap(user => user.products);
+    const allProducts = users.flatMap(user =>
+      user.products.map(product => ({
+        ...product.toObject(),
+        suppliers: product.suppliers // ✅ include suppliers
+      }))
+    );
     res.status(200).json(allProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
   }
 });
+
 
 // Create product for a specific user
 router.post('/:userId/new', isSignedIn, adminPerm, async (req, res) => {

@@ -9,10 +9,19 @@ const adminPerm = require('../middleware/is-admin');
 router.get('/', isSignedIn, async (req, res) => {
   try {
     const users = await User.find();
+    const allSuppliers = [];
 
-    const allSuppliers = users.flatMap(user =>
-      user.products.flatMap(product => product.suppliers)
-    );
+    users.forEach(user => {
+      user.products.forEach(product => {
+        product.suppliers.forEach(supplier => {
+          allSuppliers.push({
+            ...supplier.toObject(),
+            productId: product._id,  
+            userId: user._id  
+          });
+        });
+      });
+    });
 
     res.status(200).json(allSuppliers);
   } catch (err) {
