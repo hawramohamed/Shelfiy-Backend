@@ -18,7 +18,7 @@ router.get('/products', isSignedIn, async (req, res) => {
 });
 
 // Create product for a specific user
-router.post('/:userId/products', isSignedIn, adminPerm, async (req, res) => {
+router.post('/:userId/products/new', isSignedIn, adminPerm, async (req, res) => {
   try {
     const { name, price, stock, description, suppliers } = req.body;
     const user = await User.findById(req.params.userId);
