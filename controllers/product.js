@@ -78,7 +78,7 @@ router.delete('/:userId/:productId', isSignedIn, adminPerm, async (req, res) => 
     const product = user.products.id(req.params.productId);
     if (!product) return res.status(404).json({ err: 'Product not found' });
 
-    product.remove();
+    user.products = user.products.filter(p => p._id.toString() !== req.params.productId);
     await user.save();
 
     res.status(200).json({ message: 'Product deleted successfully' });

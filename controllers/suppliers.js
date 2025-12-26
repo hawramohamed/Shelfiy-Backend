@@ -94,7 +94,10 @@ router.delete('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm,
     const supplier = product.suppliers.id(req.params.supplierId);
     if (!supplier) return res.status(404).json({ err: 'Supplier not found' });
 
-    supplier.remove();
+    product.suppliers = product.suppliers.filter(
+      s => s._id.toString() !== req.params.supplierId
+    );
+
     await user.save();
 
     res.status(200).json({ message: 'Supplier deleted successfully' });
