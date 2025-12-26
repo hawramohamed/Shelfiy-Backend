@@ -5,139 +5,85 @@ const User = require('../models/user');
 const isSignedIn = require('../middleware/is-signed-in');
 const adminPerm = require('../middleware/is-admin');
 
-//index of products
-router.get('/', isSignedIn, async (req, res) => {
+// Global index of all products across all users
+router.get('/products', isSignedIn, async (req, res) => {
   try {
     const users = await User.find();
     const allProducts = users.flatMap(user => user.products);
     res.status(200).json(allProducts);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ err: "Something went wrong" });
+    console.error(err);
+    res.status(500).json({ err: 'Something went wrong' });
   }
 });
 
-//create product to user
-router.post('/:userId/new', isSignedIn, adminPerm, async (req, res) => {
+// Create product for a specific user
+router.post('/:userId/products', isSignedIn, adminPerm, async (req, res) => {
   try {
     const { name, price, stock, description, suppliers } = req.body;
     const user = await User.findById(req.params.userId);
-
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     user.products.push({ name, price, stock, description, suppliers });
     await user.save();
 
-    res.status(201).json(user.products[user.products.length - 1]); // return the new product
+    res.status(201).json(user.products[user.products.length - 1]);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
   }
 });
 
-//show single product
-router.get('/:userId/:productId', isSignedIn, async (req, res) => {
+// Show single product
+router.get('/:userId/products/:productId', isSignedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     res.status(200).json(product);
   } catch (err) {
-    if (res.statusCode === 404) {
-      res.json({ err: "Something went wrong" });
-      console.log(err);
-    } else {
-      res.status(500).json({ err: 'Something went wrong' });
-      console.log(err);
-    }
-  }
-});
-
-//edit
-router.get('/:userId/:productId/edit', isSignedIn, adminPerm, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
-
-    const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
-
-    res.status(200).json(product);
-  } catch (err) {
+    console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
-    console.log(err);
   }
 });
 
-//update product
-router.put('/:userId/:productId', isSignedIn, adminPerm, async (req, res) => {
+// Update product
+router.put('/:userId/products/:productId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     Object.assign(product, req.body);
     await user.save();
 
     res.status(200).json(product);
   } catch (err) {
-    if (res.statusCode === 404) {
-      res.json({ err: 'Something went wrong' });
-      console.log(err);
-    } else {
-      res.status(500).json({ err: 'Something went wrong' });
-      console.log(err);
-    }
+    console.error(err);
+    res.status(500).json({ err: 'Something went wrong' });
   }
 });
 
-//delete product
-router.delete('/:userId/:productId', isSignedIn, adminPerm, async (req, res) => {
+// Delete product
+router.delete('/:userId/products/:productId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     product.remove();
     await user.save();
 
-    res.status(204).end();
+    res.status(200).json({ message: 'Product deleted successfully' });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
   }
 });

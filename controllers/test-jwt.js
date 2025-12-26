@@ -7,7 +7,7 @@ router.get('/sign-token', (req, res) => {
   const user = {
     _id: 1,
     username: 'test',
-    password: 'test',
+    role: 'admin'
   };
 
   const token = jwt.sign(user, process.env.JWT_SECRET);
@@ -21,7 +21,7 @@ router.post('/verify-token', (req, res) => {
     const token = authHeader.split(' ')[1];
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log("Decoded JWT:", decoded);
     res.json({ user: decoded });
   } catch (err) {
     res.status(401).json({ message: 'invalid token' });

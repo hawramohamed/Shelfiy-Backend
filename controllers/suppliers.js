@@ -5,176 +5,101 @@ const User = require('../models/user');
 const isSignedIn = require('../middleware/is-signed-in');
 const adminPerm = require('../middleware/is-admin');
 
-//index of suppliers
-router.get('/', isSignedIn, async (req, res) => {
+//Global index of all suppliers across all users/products
+router.get('/suppliers', isSignedIn, async (req, res) => {
   try {
     const users = await User.find();
+
     const allSuppliers = users.flatMap(user =>
       user.products.flatMap(product => product.suppliers)
     );
+
     res.status(200).json(allSuppliers);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ err: "Something went wrong" });
+    console.error(err);
+    res.status(500).json({ err: 'Something went wrong' });
   }
 });
 
-
-//add supplier to product
+//Add supplier to a specific product
 router.post('/:userId/products/:productId/suppliers', isSignedIn, adminPerm, async (req, res) => {
   try {
     const { name, contact, address } = req.body;
     const user = await User.findById(req.params.userId);
-
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     product.suppliers.push({ name, contact, address });
     await user.save();
 
     res.status(201).json(product.suppliers[product.suppliers.length - 1]);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
   }
 });
 
-
-//show single supplier
-router.get('/:userId/products/:productId/:supplierId', isSignedIn, async (req, res) => {
+// Show single supplier
+router.get('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     const supplier = product.suppliers.id(req.params.supplierId);
-    if (!supplier) {
-      res.status(404);
-      throw new Error('Supplier not found');
-    }
+    if (!supplier) return res.status(404).json({ err: 'Supplier not found' });
 
     res.status(200).json(supplier);
   } catch (err) {
-    if (res.statusCode === 404) {
-      res.json({ err: "Something went wrong" });
-      console.log(err);
-    } else {
-      res.status(500).json({ err: 'Something went wrong' });
-      console.log(err);
-    }
-  }
-});
-
-
-//edit
-router.get('/:userId/products/:productId/:supplierId/edit', isSignedIn, adminPerm, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
-
-    const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
-
-    const supplier = product.suppliers.id(req.params.supplierId);
-    if (!supplier) {
-      res.status(404);
-      throw new Error('Supplier not found');
-    }
-
-    res.status(200).json(supplier);
-  } catch (err) {
+    console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
-    console.log(err);
   }
 });
 
-
-//update 
-router.put('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
+// Update supplier
+router.put('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     const supplier = product.suppliers.id(req.params.supplierId);
-    if (!supplier) {
-      res.status(404);
-      throw new Error('Supplier not found');
-    }
+    if (!supplier) return res.status(404).json({ err: 'Supplier not found' });
 
     Object.assign(supplier, req.body);
     await user.save();
 
     res.status(200).json(supplier);
   } catch (err) {
-    if (res.statusCode === 404) {
-      res.json({ err: 'Something went wrong' });
-      console.log(err);
-    } else {
-      res.status(500).json({ err: 'Something went wrong' });
-      console.log(err);
-    }
+    console.error(err);
+    res.status(500).json({ err: 'Something went wrong' });
   }
 });
 
-
-//delete 
-router.delete('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
+//Delete supplier
+router.delete('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return res.status(404).json({ err: 'User not found' });
 
     const product = user.products.id(req.params.productId);
-    if (!product) {
-      res.status(404);
-      throw new Error('Product not found');
-    }
+    if (!product) return res.status(404).json({ err: 'Product not found' });
 
     const supplier = product.suppliers.id(req.params.supplierId);
-    if (!supplier) {
-      res.status(404);
-      throw new Error('Supplier not found');
-    }
+    if (!supplier) return res.status(404).json({ err: 'Supplier not found' });
 
     supplier.remove();
     await user.save();
 
     res.status(200).json({ message: 'Supplier deleted successfully' });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ err: 'Something went wrong' });
   }
 });
