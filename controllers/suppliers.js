@@ -6,7 +6,7 @@ const isSignedIn = require('../middleware/is-signed-in');
 const adminPerm = require('../middleware/is-admin');
 
 //Global index of all suppliers across all users/products
-router.get('/suppliers', isSignedIn, async (req, res) => {
+router.get('/', isSignedIn, async (req, res) => {
   try {
     const users = await User.find();
 
@@ -22,7 +22,7 @@ router.get('/suppliers', isSignedIn, async (req, res) => {
 });
 
 //Add supplier to a specific product
-router.post('/:userId/products/:productId/suppliers', isSignedIn, adminPerm, async (req, res) => {
+router.post('/:userId/products/:productId/new', isSignedIn, adminPerm, async (req, res) => {
   try {
     const { name, contact, address } = req.body;
     const user = await User.findById(req.params.userId);
@@ -42,7 +42,7 @@ router.post('/:userId/products/:productId/suppliers', isSignedIn, adminPerm, asy
 });
 
 // Show single supplier
-router.get('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, async (req, res) => {
+router.get('/:userId/products/:productId/:supplierId', isSignedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ err: 'User not found' });
@@ -61,7 +61,7 @@ router.get('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, asy
 });
 
 // Update supplier
-router.put('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, adminPerm, async (req, res) => {
+router.put('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ err: 'User not found' });
@@ -83,7 +83,7 @@ router.put('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, adm
 });
 
 //Delete supplier
-router.delete('/:userId/products/:productId/suppliers/:supplierId', isSignedIn, adminPerm, async (req, res) => {
+router.delete('/:userId/products/:productId/:supplierId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ err: 'User not found' });

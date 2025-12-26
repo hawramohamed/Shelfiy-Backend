@@ -6,7 +6,7 @@ const isSignedIn = require('../middleware/is-signed-in');
 const adminPerm = require('../middleware/is-admin');
 
 // Global index of all products across all users
-router.get('/products', isSignedIn, async (req, res) => {
+router.get('/', isSignedIn, async (req, res) => {
   try {
     const users = await User.find();
     const allProducts = users.flatMap(user => user.products);
@@ -18,7 +18,7 @@ router.get('/products', isSignedIn, async (req, res) => {
 });
 
 // Create product for a specific user
-router.post('/:userId/products/new', isSignedIn, adminPerm, async (req, res) => {
+router.post('/:userId/new', isSignedIn, adminPerm, async (req, res) => {
   try {
     const { name, price, stock, description, suppliers } = req.body;
     const user = await User.findById(req.params.userId);
@@ -35,7 +35,7 @@ router.post('/:userId/products/new', isSignedIn, adminPerm, async (req, res) => 
 });
 
 // Show single product
-router.get('/:userId/products/:productId', isSignedIn, async (req, res) => {
+router.get('/:userId/:productId', isSignedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ err: 'User not found' });
@@ -51,7 +51,7 @@ router.get('/:userId/products/:productId', isSignedIn, async (req, res) => {
 });
 
 // Update product
-router.put('/:userId/products/:productId', isSignedIn, adminPerm, async (req, res) => {
+router.put('/:userId/:productId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ err: 'User not found' });
@@ -70,7 +70,7 @@ router.put('/:userId/products/:productId', isSignedIn, adminPerm, async (req, re
 });
 
 // Delete product
-router.delete('/:userId/products/:productId', isSignedIn, adminPerm, async (req, res) => {
+router.delete('/:userId/:productId', isSignedIn, adminPerm, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ err: 'User not found' });
