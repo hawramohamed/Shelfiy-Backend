@@ -41,5 +41,5 @@ app.use('/products', productsCtrl);
 app.use('/suppliers', suppliersCtrl);
 
 app.listen(PORT, () => {
-  console.log('The express app is ready!');
+  console.log(`Server running on port ${PORT}`);
 });
